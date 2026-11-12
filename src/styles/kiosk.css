@@ -1,0 +1,114 @@
+/* Edge-to-Edge Portrait Application Layout for Physical Holobox Display (1080x1920 / 9:16) */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  --accent-cyan: #38bdf8;
+  --accent-blue: #0ea5e9;
+  --accent-blue-deep: #0284c7;
+  --accent-purple: #8b5cf6;
+  --accent-purple-light: #c084fc;
+  --accent-pink: #ec4899;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --border-glass: rgba(226, 232, 240, 0.85);
+  --border-holo: rgba(56, 189, 248, 0.45);
+  
+  --shadow-holo: 0 8px 32px -4px rgba(14, 165, 233, 0.18), 0 0 16px rgba(192, 132, 252, 0.12);
+  --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.4);
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+input, textarea {
+  user-select: text;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background-color: #060913;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  touch-action: manipulation;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #060913;
+}
+
+/* On standard desktop widescreen monitors (during laptop testing), 
+   it centers in a clean, sharp vertical 9:16 portrait column (zero fake machine chassis). */
+.app-portrait-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 56.25vh; /* Exactly 9:16 ratio on landscape monitors: (9/16) * 100vh */
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.7);
+}
+
+/* ON PHYSICAL HOLOBOX DEVICE (Portrait 1080x1920 / 2160x3840 / 9:16):
+   It expands to 100% width and 100% height, filling every single pixel
+   of your Holobox screen edge-to-edge with zero borders or gaps! */
+@media (max-aspect-ratio: 9/16), (orientation: portrait) {
+  #root {
+    background: transparent;
+  }
+  .app-portrait-viewport {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    aspect-ratio: auto !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* When the browser runs in Kiosk or Fullscreen mode (F11) */
+:fullscreen,
+:-webkit-full-screen {
+  background: #000000;
+}
+
+@media (orientation: portrait) {
+  :fullscreen .app-portrait-viewport,
+  :-webkit-full-screen .app-portrait-viewport {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+  }
+}

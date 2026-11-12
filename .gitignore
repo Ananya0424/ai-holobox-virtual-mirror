@@ -1,0 +1,25 @@
+# Dependencies & Build Output
+node_modules/
+dist/
+.vite/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Python & Local AI Model Weights (~5.5 GB offline models)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+models/
+
+# Runtime Captures & Verification Outputs
+public/captured/
+scripts/profession_verifications/
+
+# OS & Logs
+.DS_Store
+Thumbs.db
+*.log
