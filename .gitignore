@@ -23,3 +23,15 @@ scripts/profession_verifications/
 .DS_Store
 Thumbs.db
 *.log
+
+# Tunnel binary & IDE
+cloudflared.exe
+.vs/
+
+# Scratch & Temporary test outputs
+test_outputs/
+test_decart_*
+scratch/
+scripts/temp_profile_*/
+public/test_screenshots/
+public/kiosk_final_verification/

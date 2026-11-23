@@ -164,7 +164,46 @@ class ArcFaceAnalyzer:
         faces.sort(key=lambda f: f["area"] * f["score"], reverse=True)
         return faces
 
-    def extract_identity(self, rgb_img, det_size=640):
+    @staticmethod
+    def select_primary_face(faces, img_w, img_h):
+        """
+        Center-weighted & frontal-weighted primary face selector for kiosk captures.
+        Prioritizes the user standing near the center facing the camera and ignores
+        closer coworkers/bystanders sitting near the left/right edges or in side profile.
+        """
+        if not faces:
+            return None
+        if len(faces) == 1:
+            return faces[0]
+
+        def _score(f):
+            x1, y1, x2, y2 = f["bbox"]
+            cx = 0.5 * (x1 + x2) / float(max(1, img_w))
+            area = max(1.0, (x2 - x1) * (y2 - y1))
+            det_score = float(f.get("score", 0.5))
+
+            # Strong Gaussian preference for horizontal center (kiosk standing zone)
+            dx = abs(cx - 0.50)
+            center_weight = math.exp(-((dx / 0.25) ** 2))
+            if cx < 0.20 or cx > 0.80:
+                center_weight *= 0.10  # Heavily penalize edge bystanders
+
+            # Frontal symmetry check using 5-point landmarks (eyes vs nose)
+            frontal_weight = 1.0
+            kps = f.get("kps")
+            if kps is not None and len(kps) >= 3:
+                le, re, nose = kps[0], kps[1], kps[2]
+                eye_span = max(1.0, abs(float(re[0]) - float(le[0])))
+                eye_mid_x = 0.5 * (float(le[0]) + float(re[0]))
+                yaw_asym = abs(float(nose[0]) - eye_mid_x) / eye_span
+                if yaw_asym > 0.35:
+                    frontal_weight = 0.22  # Side-profile bystander looking away
+
+            return math.sqrt(area) * det_score * center_weight * frontal_weight
+
+        return max(faces, key=_score)
+
+    def extract_identity(self, rgb_img, det_size=640, prefer_center=True):
         """
         Extracts normalized 512-d ArcFace embedding and aligned 224x224 PIL face crop
         (including glasses, forehead/hair & chin) for IP-Adapter FaceID Plus v2.
@@ -174,12 +213,13 @@ class ArcFaceAnalyzer:
         else:
             pil_rgb = Image.fromarray(rgb_img).convert("RGB")
         arr_rgb = np.array(pil_rgb)
+        img_h, img_w = arr_rgb.shape[:2]
 
         faces = self.detect_faces(arr_rgb, det_size=det_size, thresh=0.35)
         if not faces:
             return None
 
-        face = faces[0]
+        face = self.select_primary_face(faces, img_w, img_h) if prefer_center else faces[0]
         kps = face["kps"].astype(np.float32)
 
         # 1. Standard 112x112 similarity warp for w600k_r50 ArcFace embedding
@@ -274,12 +314,62 @@ def render_coco18_openpose(w, h, pts):
     return Image.fromarray(canvas, mode="RGB")
 
 
-def build_standing_fullbody_openpose(w=512, h=768, fullbody_matte=None, gender="female"):
+_POSE_DETECTOR = None
+
+def get_mediapipe_pose_detector():
+    """Initializes or returns cached MediaPipe PoseLandmarker (offline heavy float16 task)."""
+    global _POSE_DETECTOR
+    if _POSE_DETECTOR is not None:
+        return _POSE_DETECTOR
+    try:
+        from mediapipe.tasks import python
+        from mediapipe.tasks.python import vision
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        model_path = os.path.join(base_dir, 'models', 'pose', 'pose_landmarker_heavy.task')
+        if not os.path.exists(model_path):
+            return None
+        base_options = python.BaseOptions(model_asset_path=model_path)
+        options = vision.PoseLandmarkerOptions(
+            base_options=base_options,
+            running_mode=vision.RunningMode.IMAGE,
+            num_poses=1,
+            min_pose_detection_confidence=0.30,
+            min_pose_presence_confidence=0.30,
+            min_tracking_confidence=0.30,
+        )
+        _POSE_DETECTOR = vision.PoseLandmarker.create_from_options(options)
+        return _POSE_DETECTOR
+    except Exception as e:
+        print(f"[PoseDetector] MediaPipe Pose init skipped: {e}")
+        return None
+
+
+def extract_user_pose_landmarks(rgb_image):
     """
-    Builds a well-proportioned, slender standing head-to-feet COCO-18 OpenPose skeleton (512x768).
-    If fullbody_matte is provided from an already head-to-feet capture, adapts horizontal
-    center & vertical span to stay aligned with the person's real standing posture while
-    guaranteeing full head-to-feet margins.
+    Runs offline MediaPipe PoseLandmarker on the user webcam photo.
+    Returns list of 33 normalized landmarks or None.
+    """
+    try:
+        import mediapipe as mp
+        detector = get_mediapipe_pose_detector()
+        if detector is None:
+            return None
+        np_img = np.array(rgb_image, dtype=np.uint8)
+        mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=np_img)
+        res = detector.detect(mp_img)
+        if res.pose_landmarks and len(res.pose_landmarks) > 0:
+            return res.pose_landmarks[0]
+        return None
+    except Exception as e:
+        print(f"[PoseDetector] Pose extraction error: {e}")
+        return None
+
+
+def build_standing_fullbody_openpose(w=512, h=768, fullbody_matte=None, gender="female", user_pose_landmarks=None):
+    """
+    Builds a well-proportioned standing head-to-feet COCO-18 OpenPose skeleton (512x768).
+    Dynamically transfers the user's upper body pose (arms raised, waving, pointing, elbows)
+    into the full-length standing portrait while maintaining natural full-body proportions.
     """
     cx = w * 0.5
     top_y = h * 0.11   # ~84px (nose) -> leaves crown room above (~45px..84px)
@@ -290,7 +380,6 @@ def build_standing_fullbody_openpose(w=512, h=768, fullbody_matte=None, gender="
         if len(ys) > 300:
             bt, bb = int(ys.min()), int(ys.max())
             bh = bb - bt
-            # Only anchor to source silhouette if feet/legs are present
             if bh > h * 0.55:
                 top_y = max(h * 0.08, min(h * 0.16, bt + bh * 0.055))
                 ankle_y = min(h * 0.91, max(h * 0.78, bb - bh * 0.045))
@@ -300,34 +389,88 @@ def build_standing_fullbody_openpose(w=512, h=768, fullbody_matte=None, gender="
 
     body_h = max(360.0, ankle_y - top_y)
     is_fem = "fem" in (gender or "female").lower()
-    sh_w = body_h * (0.104 if is_fem else 0.120)     # slender natural shoulder half-width
-    hip_w = body_h * (0.058 if is_fem else 0.064)    # slender hip half-width
-    arm_out = body_h * (0.138 if is_fem else 0.152)  # arms tucked naturally close to waist
+    # Distinct, authentic adult male vs female human proportions
+    sh_w = body_h * (0.132 if is_fem else 0.158)     # broader masculine shoulders for men, natural tailored shoulders for women
+    hip_w = body_h * (0.096 if is_fem else 0.082)    # natural feminine hips for women, straight athletic hips for men
+    arm_out = body_h * (0.160 if is_fem else 0.180)  # natural arms relaxed at sides with space for clothing
 
-    # COCO-18 indices:
-    # 0 Nose, 1 Neck, 2 RShoulder, 3 RElbow, 4 RWrist, 5 LShoulder, 6 LElbow, 7 LWrist,
-    # 8 RHip, 9 RKnee, 10 RAnkle, 11 LHip, 12 LKnee, 13 LAnkle, 14 REye, 15 LEye, 16 REar, 17 LEar
     nose_y = top_y
     neck_y = top_y + body_h * 0.095
     sh_y = top_y + body_h * 0.155
-    elbow_y = top_y + body_h * 0.335
-    wrist_y = top_y + body_h * 0.495
     hip_y = top_y + body_h * 0.475
-    knee_y = top_y + body_h * 0.735
+    knee_y = top_y + body_h * 0.730
     eye_y = top_y - body_h * 0.022
     ear_y = top_y - body_h * 0.012
-    eye_dx = body_h * 0.022
-    ear_dx = body_h * 0.048
+    eye_dx = body_h * 0.024
+    ear_dx = body_h * 0.052
+
+    # Default formal/relaxed upright straight arm positions
+    r_elbow = (cx - arm_out * 0.94, top_y + body_h * 0.335)
+    r_wrist = (cx - arm_out * 0.98, top_y + body_h * 0.495)
+    l_elbow = (cx + arm_out * 0.94, top_y + body_h * 0.335)
+    l_wrist = (cx + arm_out * 0.98, top_y + body_h * 0.495)
+
+    # Dynamic Pose Transfer: map user webcam arm gestures (e.g., hand up, waving, pointing)
+    # Correct MediaPipe mapping:
+    # In mirrored webcam image, person facing camera:
+    # - Viewer's LEFT is person's RIGHT: MediaPipe 12 (RShoulder), 14 (RElbow), 16 (RWrist)
+    # - Viewer's RIGHT is person's LEFT: MediaPipe 11 (LShoulder), 13 (LElbow), 15 (LWrist)
+    if user_pose_landmarks is not None and len(user_pose_landmarks) >= 17:
+        try:
+            sh_r_mp = user_pose_landmarks[12] # Viewer's Left (MediaPipe Right Shoulder)
+            el_r_mp = user_pose_landmarks[14] # Viewer's Left (MediaPipe Right Elbow)
+            wr_r_mp = user_pose_landmarks[16] # Viewer's Left (MediaPipe Right Wrist)
+
+            sh_l_mp = user_pose_landmarks[11] # Viewer's Right (MediaPipe Left Shoulder)
+            el_l_mp = user_pose_landmarks[13] # Viewer's Right (MediaPipe Left Elbow)
+            wr_l_mp = user_pose_landmarks[15] # Viewer's Right (MediaPipe Left Wrist)
+
+            mp_sh_span = math.hypot(sh_l_mp.x - sh_r_mp.x, sh_l_mp.y - sh_r_mp.y)
+            if mp_sh_span > 0.08:
+                scale_arm = (sh_w * 2.0) / mp_sh_span
+
+                # Transfer arm gesture ONLY if user deliberately raises hand high up (waving / saluting)
+                # Strict threshold prevents accidental desk resting hands or hair adjustments from distorting the pose
+                is_r_gesture = (wr_r_mp.y < (sh_r_mp.y - 0.22)) and (abs(wr_r_mp.x - sh_r_mp.x) > 0.10)
+                if is_r_gesture and wr_r_mp.visibility > 0.55:
+                    dx_w = (wr_r_mp.x - sh_r_mp.x) * scale_arm
+                    dy_w = (wr_r_mp.y - sh_r_mp.y) * scale_arm
+                    r_wrist = (max(20.0, min(w - 20.0, (cx - sh_w) + dx_w)), max(top_y * 0.15, min(ankle_y - 20.0, sh_y + dy_w)))
+
+                    if el_r_mp.visibility > 0.35:
+                        dx_e = (el_r_mp.x - sh_r_mp.x) * scale_arm
+                        dy_e = (el_r_mp.y - sh_r_mp.y) * scale_arm
+                        r_elbow = (max(20.0, min(w - 20.0, (cx - sh_w) + dx_e)), max(top_y * 0.3, min(ankle_y - 30.0, sh_y + dy_e)))
+                    else:
+                        # Natural elbow midpoint towards raised wrist
+                        r_elbow = ((cx - sh_w + r_wrist[0]) * 0.5 - 20.0, (sh_y + r_wrist[1]) * 0.5)
+
+                # Transfer arm gesture ONLY if user deliberately raises hand high up
+                is_l_gesture = (wr_l_mp.y < (sh_l_mp.y - 0.22)) and (abs(wr_l_mp.x - sh_l_mp.x) > 0.10)
+                if is_l_gesture and wr_l_mp.visibility > 0.55:
+                    dx_w = (wr_l_mp.x - sh_l_mp.x) * scale_arm
+                    dy_w = (wr_l_mp.y - sh_l_mp.y) * scale_arm
+                    l_wrist = (max(20.0, min(w - 20.0, (cx + sh_w) + dx_w)), max(top_y * 0.15, min(ankle_y - 20.0, sh_y + dy_w)))
+
+                    if el_l_mp.visibility > 0.35:
+                        dx_e = (el_l_mp.x - sh_l_mp.x) * scale_arm
+                        dy_e = (el_l_mp.y - sh_l_mp.y) * scale_arm
+                        l_elbow = (max(20.0, min(w - 20.0, (cx + sh_w) + dx_e)), max(top_y * 0.3, min(ankle_y - 30.0, sh_y + dy_e)))
+                    else:
+                        # Natural elbow midpoint towards raised wrist
+                        l_elbow = ((cx + sh_w + l_wrist[0]) * 0.5 + 20.0, (sh_y + l_wrist[1]) * 0.5)
+        except Exception as pose_err:
+            print(f"[DynamicPose] Arm transfer fallback: {pose_err}")
 
     pts = [
         (cx, nose_y),                         # 0 Nose
         (cx, neck_y),                         # 1 Neck
         (cx - sh_w, sh_y),                    # 2 RShoulder
-        (cx - arm_out * 0.94, elbow_y),       # 3 RElbow
-        (cx - arm_out * 1.00, wrist_y),       # 4 RWrist
+        r_elbow,                              # 3 RElbow
+        r_wrist,                              # 4 RWrist
         (cx + sh_w, sh_y),                    # 5 LShoulder
-        (cx + arm_out * 0.94, elbow_y),       # 6 LElbow
-        (cx + arm_out * 1.00, wrist_y),       # 7 LWrist
+        l_elbow,                              # 6 LElbow
+        l_wrist,                              # 7 LWrist
         (cx - hip_w, hip_y),                  # 8 RHip
         (cx - hip_w * 0.95, knee_y),          # 9 RKnee
         (cx - hip_w * 0.95, ankle_y),         # 10 RAnkle

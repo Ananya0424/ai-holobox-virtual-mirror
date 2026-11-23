@@ -48,9 +48,11 @@ if (-not (Test-Path "dist\index.html")) {
 }
 
 # 3. Clean up any leftover worker or port-3000 server from previous run
-Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like "*ai_worker.py*" } | ForEach-Object {
-    Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
-}
+try {
+    Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*ai_worker.py*" } | ForEach-Object {
+        Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+} catch {}
 Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object {
     Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
 }
@@ -148,9 +150,11 @@ finally {
     if ($ChromeProc -and -not $ChromeProc.HasExited) { Stop-Process -Id $ChromeProc.Id -Force -ErrorAction SilentlyContinue }
     if ($ViteProc -and -not $ViteProc.HasExited) { cmd.exe /c "taskkill /PID $($ViteProc.Id) /T /F" | Out-Null }
     if ($WorkerProc -and -not $WorkerProc.HasExited) { Stop-Process -Id $WorkerProc.Id -Force -ErrorAction SilentlyContinue }
-    Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like "*ai_worker.py*" } | ForEach-Object {
-        Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
-    }
+    try {
+        Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*ai_worker.py*" } | ForEach-Object {
+            Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+        }
+    } catch {}
     Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object {
         Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
     }

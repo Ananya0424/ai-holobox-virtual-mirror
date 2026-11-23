@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <linearGradient id="armor" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="45%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="240" height="300" rx="18" fill="url(#bg)"/>
+  <!-- Blue Aether Energy Rings -->
+  <circle cx="115" cy="135" r="82" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.45"/>
+  <circle cx="115" cy="135" r="64" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.3"/>
+  <!-- Glowing Energy Sword (Right Hand) -->
+  <g filter="url(#glow)">
+    <polygon points="184,36 192,158 176,158" fill="url(#blade)"/>
+    <line x1="184" y1="42" x2="184" y2="154" stroke="#ffffff" stroke-width="2" opacity="0.9"/>
+  </g>
+  <rect x="166" y="156" width="36" height="7" rx="3" fill="url(#gold)"/>
+  <rect x="180" y="163" width="8" height="24" rx="2" fill="#1e293b"/>
+  <circle cx="184" cy="190" r="5" fill="url(#gold)"/>
+  <!-- Paladin Helmet & White/Silver/Gold Armour Silhouette -->
+  <path d="M115,44 C99,44 91,57 93,76 L115,86 L137,76 C139,57 131,44 115,44 Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="2"/>
+  <path d="M101,64 L129,64 L125,70 L105,70 Z" fill="#0ea5e9" filter="url(#glow)"/>
+  <polygon points="115,34 119,50 111,50" fill="url(#gold)"/>
+  <!-- Pauldrons & Breastplate -->
+  <path d="M74,94 C78,82 95,82 115,84 C135,82 152,82 156,94 L166,120 L146,126 L139,172 L91,172 L84,126 L64,120 Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="2"/>
+  <path d="M115,92 L126,116 L115,152 L104,116 Z" fill="#38bdf8" opacity="0.85" filter="url(#glow)"/>
+  <!-- Arms & Right Hand Holding Sword -->
+  <path d="M154,118 L178,164 L168,170 L144,128 Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="1.5"/>
+  <path d="M76,118 L58,166 L70,170 L86,128 Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="1.5"/>
+  <!-- Greaves / Full Body Legs -->
+  <path d="M93,174 L112,174 L108,256 L88,256 Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="1.5"/>
+  <path d="M118,174 L137,174 L142,256 L122,256 Z" fill="url(#armor)" stroke="url(#gold)" stroke-width="1.5"/>
+  <!-- Blue Energy Sparks -->
+  <circle cx="52" cy="88" r="3" fill="#7dd3fc" filter="url(#glow)"/>
+  <circle cx="198" cy="96" r="3.5" fill="#38bdf8" filter="url(#glow)"/>
+  <circle cx="64" cy="214" r="2.5" fill="#38bdf8" filter="url(#glow)"/>
+  <ellipse cx="115" cy="264" rx="58" ry="8" fill="#38bdf8" opacity="0.28"/>
+</svg>

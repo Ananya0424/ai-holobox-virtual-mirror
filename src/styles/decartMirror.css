@@ -1,0 +1,680 @@
+/* ==========================================================================
+   HOLOBOX 9:16 REAL-TIME AI CHARACTER MIRROR STYLES
+   Pixel-aligned with physical Holobox reference UI
+   ========================================================================== */
+
+.holobox-mirror-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  background: #000000;
+  overflow: hidden;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 1. TOP STATUS & NAVIGATION BAR */
+.holobox-top-bar {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  z-index: 60;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.holobox-live-badge {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.holobox-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444, 0 0 16px #ef4444;
+  animation: liveDotPulse 1.8s infinite;
+}
+
+@keyframes liveDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.holobox-live-text {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.holobox-top-controls {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.holobox-pill-stop {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 6px 16px;
+  color: #ffffff;
+  font-size: 12.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.holobox-pill-stop:hover {
+  background: rgba(51, 65, 85, 0.95);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.pill-status-text {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.pill-divider {
+  margin: 0 8px;
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 300;
+}
+
+.pill-action-text {
+  color: #ef4444;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.holobox-pill-stop.resume {
+  background: rgba(2, 132, 199, 0.85);
+  border-color: #38bdf8;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.holobox-pill-stop.camera-mode {
+  cursor: default;
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.holobox-btn-exit {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.holobox-btn-exit:hover {
+  background: rgba(239, 68, 68, 0.8);
+  border-color: #ef4444;
+}
+
+/* 2. MAIN VIEWPORT */
+.holobox-main-viewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background: radial-gradient(circle at 50% 40%, #0c1829 0%, #050b14 60%, #020408 100%);
+  overflow: hidden;
+}
+
+.holobox-stream-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Natural mirror flip */
+  transition: opacity 0.35s ease;
+}
+
+/* Layer 1: Local camera ALWAYS stays alive underneath to guarantee zero black screen */
+.holobox-stream-video.local-cam {
+  z-index: 1;
+  opacity: 1;
+}
+
+/* Layer 2: Remote AI transformed stream fades in only once real pixels are decoded */
+.holobox-stream-video.remote-stream {
+  z-index: 2;
+}
+
+.holobox-stream-video.remote-stream.active {
+  opacity: 1;
+}
+
+.holobox-stream-video.remote-stream.buffering {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Layer 3: Freeze-frame canvas seamlessly bridges Decart's character-switch window */
+.holobox-freeze-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 0.4s ease-out;
+}
+
+.holobox-freeze-canvas.visible {
+  opacity: 1;
+}
+
+.holobox-freeze-canvas.hidden {
+  opacity: 0;
+}
+
+.holobox-connecting-hud {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 24px 36px;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(16px);
+  z-index: 25;
+}
+
+.holobox-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(56, 189, 248, 0.2);
+  border-top-color: #38bdf8;
+  border-radius: 50%;
+  animation: holoSpin 0.9s linear infinite;
+}
+
+@keyframes holoSpin {
+  to { transform: rotate(360deg); }
+}
+
+.holobox-connecting-text {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.holobox-morph-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 96px;
+  background: radial-gradient(circle at 50% 45%, rgba(56, 189, 248, 0.08), rgba(2, 6, 23, 0.35));
+  pointer-events: none;
+  animation: morphFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes morphFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.holobox-morph-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #38bdf8, #818cf8, transparent);
+  box-shadow: 0 0 16px #38bdf8, 0 0 32px #818cf8;
+  animation: scanlineSweep 1.5s ease-in-out infinite;
+}
+
+@keyframes scanlineSweep {
+  0% { top: 8%; opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { top: 92%; opacity: 0; }
+}
+
+.morph-pulse-text {
+  background: rgba(2, 132, 199, 0.92);
+  border: 1.5px solid #38bdf8;
+  color: #ffffff;
+  padding: 8px 24px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.65);
+  backdrop-filter: blur(10px);
+}
+
+.morph-sub-badge {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #e0f2fe;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 4px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+}
+
+/* 3. RIGHT-SIDE VERTICAL SCROLLABLE CHARACTER SIDEBAR */
+.holobox-sidebar-characters {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  right: 10px;
+  width: 118px;
+  z-index: 45;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 8px 5px;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-scroll-track {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+}
+
+.sidebar-scroll-track::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sidebar-scroll-track::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.4);
+  border-radius: 3px;
+}
+
+.sidebar-char-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-char-card:hover {
+  background: rgba(51, 65, 85, 0.85);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.sidebar-char-card.active-live {
+  background: rgba(14, 165, 233, 0.18);
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5), inset 0 0 10px rgba(56, 189, 248, 0.15);
+  transform: scale(1.02);
+}
+
+.char-card-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+  padding: 0 2px;
+}
+
+.char-number {
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.char-live-badge {
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  letter-spacing: 0.4px;
+  box-shadow: 0 0 8px rgba(14, 165, 233, 0.7);
+}
+
+.char-live-dot {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.char-thumb-wrap {
+  width: 78px;
+  height: 84px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #090d16;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8);
+}
+
+.char-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-char-card:hover .char-thumb-img {
+  transform: scale(1.06);
+}
+
+.char-title-wrap {
+  width: 100%;
+  text-align: center;
+}
+
+.char-title-main {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.2;
+}
+
+.char-title-sub {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 4. BOTTOM-RIGHT FLOATING CARD: REAL CAMERA PIP */
+.holobox-camera-pip {
+  position: absolute;
+  bottom: 84px;
+  right: 136px; /* Positioned right beside the vertical sidebar */
+  width: 108px;
+  height: 154px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+  overflow: hidden;
+  background: #090d16;
+  z-index: 50;
+}
+
+.pip-header-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  padding: 2px 6px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.pip-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+
+.pip-video-container {
+  width: 100%;
+  height: 100%;
+}
+
+.pip-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Mirror flip for natural selfie movement */
+}
+
+/* 5. BOTTOM-CENTER CIRCULAR SHUTTER BUTTON */
+.holobox-shutter-container {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;
+}
+
+.holobox-shutter-btn {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 3.5px solid #ffffff;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  padding: 0;
+}
+
+.holobox-shutter-btn:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+.holobox-shutter-btn:active {
+  transform: scale(0.92);
+}
+
+.shutter-inner-ring {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.shutter-center-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.holobox-shutter-btn:active .shutter-inner-ring {
+  transform: scale(0.88);
+  background: #38bdf8;
+}
+
+/* CAMERA FLASH EFFECT */
+.decart-camera-flash {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 100;
+  pointer-events: none;
+  animation: cameraFlash 0.3s ease-out forwards;
+}
+
+@keyframes cameraFlash {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+
+/* SNAPSHOT MODAL */
+.holobox-snapshot-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.snapshot-card {
+  background: #0f172a;
+  border: 1.5px solid rgba(56, 189, 248, 0.5);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+}
+
+.snapshot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.snapshot-title {
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.snapshot-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.snapshot-close-btn:hover {
+  color: #ffffff;
+}
+
+.snapshot-img-wrap {
+  width: 100%;
+  height: 380px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000000;
+}
+
+.snapshot-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.snapshot-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.snapshot-download-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+  color: #ffffff;
+  text-decoration: none;
+  text-align: center;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);
+}
+
+.snapshot-retake-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}

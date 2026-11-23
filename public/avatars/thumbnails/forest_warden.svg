@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#065f46" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#052e16"/>
+      <stop offset="100%" stop-color="#02140a"/>
+    </radialGradient>
+    <linearGradient id="emerald" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="55%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </linearGradient>
+    <linearGradient id="bowGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a7f3d0"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="240" height="300" rx="18" fill="url(#bg)"/>
+  <!-- Magical Bow & Glowing Arrow (Left Hand Side) -->
+  <path d="M56,64 C26,110 26,174 56,216" fill="none" stroke="url(#bowGlow)" stroke-width="6" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="56" y1="68" x2="56" y2="212" stroke="#d1fae5" stroke-width="1.5" opacity="0.8"/>
+  <g filter="url(#glow)">
+    <line x1="22" y1="140" x2="96" y2="140" stroke="#6ee7b7" stroke-width="3"/>
+    <polygon points="16,140 28,133 28,147" fill="#ecfdf5"/>
+  </g>
+  <!-- Forest Warden Organic Emerald Armour -->
+  <path d="M126,46 C111,46 105,60 107,78 L126,86 L145,78 C147,60 141,46 126,46 Z" fill="url(#emerald)" stroke="#a7f3d0" stroke-width="1.8"/>
+  <path d="M108,52 L98,38 L114,48 Z" fill="#34d399"/>
+  <path d="M144,52 L154,38 L138,48 Z" fill="#34d399"/>
+  <path d="M92,90 C104,82 148,82 160,90 L168,122 L150,128 L146,174 L106,174 L102,128 L84,122 Z" fill="url(#emerald)" stroke="#6ee7b7" stroke-width="1.8"/>
+  <!-- Arms -->
+  <path d="M90,118 L54,136 L58,146 L98,130 Z" fill="url(#emerald)" stroke="#a7f3d0" stroke-width="1.4"/>
+  <path d="M158,118 L174,164 L162,168 L148,128 Z" fill="url(#emerald)" stroke="#a7f3d0" stroke-width="1.4"/>
+  <!-- Legs -->
+  <path d="M108,176 L124,176 L120,256 L102,256 Z" fill="url(#emerald)" stroke="#6ee7b7" stroke-width="1.4"/>
+  <path d="M128,176 L144,176 L150,256 L132,256 Z" fill="url(#emerald)" stroke="#6ee7b7" stroke-width="1.4"/>
+  <!-- Floating Leaves & Nature Energy -->
+  <path d="M188,72 C196,64 208,68 202,80 C194,84 184,80 188,72 Z" fill="#34d399" filter="url(#glow)"/>
+  <path d="M196,184 C204,176 214,182 208,192 C200,196 192,192 196,184 Z" fill="#6ee7b7" filter="url(#glow)"/>
+  <path d="M44,230 C52,222 62,228 56,238 C48,242 40,238 44,230 Z" fill="#10b981" filter="url(#glow)"/>
+  <ellipse cx="126" cy="264" rx="58" ry="8" fill="#10b981" opacity="0.3"/>
+</svg>

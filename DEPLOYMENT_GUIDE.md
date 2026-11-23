@@ -58,6 +58,35 @@ Guests on cellular data cannot reach a private `192.168.x.x` IP. Expose port `30
    ```powershell
    powershell -ExecutionPolicy Bypass -File scripts/start_holobox_kiosk.ps1 -PublicUrl "https://your-tunnel-url.trycloudflare.com"
    ```
+
+---
+
+## 5. Cloud GPU Deployment on Vast.ai ($0.15 - $0.25 / hr)
+
+If you do not have a dedicated local laptop GPU at your event or kiosk, you can run the entire backend and frontend in the cloud on **Vast.ai** using an NVIDIA RTX 3090 / RTX 4090 for ~₹15–₹20 per hour.
+
+### Step-by-Step Setup:
+1. **Sign Up & Add $5–$10 Credit:**
+   - Go to [vast.ai](https://vast.ai/) and create an account.
+2. **Search for an Instance:**
+   - **GPU:** Select `RTX 3090` (24GB) or `RTX 4090` (24GB) or `A4000` / `A5000`.
+   - **Template:** Choose `PyTorch` (e.g. `pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime`).
+   - **Disk Size:** Allocate `40 GB` disk storage.
+   - Click **Rent**.
+3. **Open Terminal / SSH:**
+   - In your Vast.ai console, click the **Connect** or **Open Web Terminal** button.
+4. **Run the 1-Click Deployment Script:**
+   ```bash
+   git clone <YOUR_REPO_URL> holobox-mirror
+   cd holobox-mirror
+   bash scripts/deploy_vastai.sh
+   ```
+5. **Get Live Public Link:**
+   - The script will automatically install all dependencies, build the frontend, launch the GPU worker on port 5055, and output a secure HTTPS link:
+   - `https://xxxx.trycloudflare.com`
+   - Open this URL directly inside the Holobox kiosk browser or on your phone!
+6. **When Finished:**
+   - Go to your Vast.ai dashboard and click **Stop** (so billing pauses) or **Destroy** when the exhibition is over.
    *(Or set `PUBLIC_URL=https://...` in environment before running `npm run start:kiosk`.)*
 
 ---

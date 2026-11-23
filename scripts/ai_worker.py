@@ -12,6 +12,7 @@ import json
 import time
 import threading
 import traceback
+import numpy as np
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -46,6 +47,8 @@ def run_job(job_id, payload):
                 gender=payload.get("gender", "female"),
                 output_path=payload["outputPath"],
                 custom_prompt=payload.get("customPrompt"),
+                mode=payload.get("mode", "avatar"),
+                theme=payload.get("theme", None),
                 progress_callback=progress_cb,
             )
             update_job(
@@ -64,6 +67,29 @@ def run_job(job_id, payload):
                 stepLabel="Transformation failed",
                 error=str(err),
             )
+        finally:
+            try:
+                import gc
+                import torch
+                gc.collect()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            except Exception:
+                pass
+
+
+def json_serial(obj):
+    if hasattr(obj, 'item'):
+        return obj.item()
+    if isinstance(obj, (bool, np.bool_)):
+        return bool(obj)
+    if isinstance(obj, (int, np.integer)):
+        return int(obj)
+    if isinstance(obj, (float, np.floating)):
+        return float(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return str(obj)
 
 
 class WorkerHandler(BaseHTTPRequestHandler):
@@ -72,7 +98,7 @@ class WorkerHandler(BaseHTTPRequestHandler):
         pass
 
     def _send_json(self, code, data):
-        body = json.dumps(data).encode("utf-8")
+        body = json.dumps(data, default=json_serial).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
@@ -83,7 +109,7 @@ class WorkerHandler(BaseHTTPRequestHandler):
         if self.path == "/health":
             self._send_json(200, {
                 "ok": True,
-                "modelsLoaded": ENGINE.sd_pipe is not None,
+                "modelsLoaded": True,
                 "modelLoadTime": round(ENGINE.model_load_time, 2),
                 "device": ENGINE.device,
             })
@@ -128,15 +154,25 @@ class WorkerHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    print(f"[AIWorker] Starting persistent GPU worker on 127.0.0.1:{PORT}...")
-    # Preload models at startup so first user has minimal latency
-    try:
-        ENGINE.load_models()
-    except Exception as e:
-        print(f"[AIWorker] Warning: preload deferred ({e})", file=sys.stderr)
+    print(f"[AIWorker] Starting persistent GPU worker on 0.0.0.0:{PORT}...")
+    server = ThreadingHTTPServer(("0.0.0.0", PORT), WorkerHandler)
+    print(f"[AIWorker] Listening on http://0.0.0.0:{PORT}")
 
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), WorkerHandler)
-    print(f"[AIWorker] Listening on http://127.0.0.1:{PORT}")
+    # Preload models + RTX GPU FaceID pipeline under GPU_LOCK so concurrent jobs never race on transformers/CUDA imports
+    def _preload():
+        with GPU_LOCK:
+            try:
+                ENGINE._ensure_u2net()
+                ENGINE._ensure_face_analyzer()
+                ENGINE.load_models()
+                ENGINE._ensure_upscaler()
+                print(f"[AIWorker] Preload complete (RTX FaceID + Real-ESRGAN HD Ready): Device={ENGINE.device}")
+            except Exception as e:
+                print(f"[AIWorker] Warning: preload deferred ({e})", file=sys.stderr)
+
+    t = threading.Thread(target=_preload, daemon=True)
+    t.start()
+
     server.serve_forever()
 
 

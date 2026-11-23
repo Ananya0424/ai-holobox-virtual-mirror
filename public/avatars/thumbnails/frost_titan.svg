@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#0b1530"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <linearGradient id="navyIce" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="45%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#172554"/>
+    </linearGradient>
+    <linearGradient id="iceBlade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="50%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="240" height="300" rx="18" fill="url(#bg)"/>
+  <!-- Massive Magical Ice Battle-Axe -->
+  <rect x="176" y="54" width="8" height="202" rx="3" fill="#cbd5e1"/>
+  <g filter="url(#glow)">
+    <path d="M180,58 L218,46 C224,78 220,104 180,114 Z" fill="url(#iceBlade)"/>
+    <path d="M180,66 L154,58 C150,80 154,98 180,106 Z" fill="url(#iceBlade)" opacity="0.85"/>
+  </g>
+  <!-- Frost Titan Heavy Navy & Silver Ice Armour -->
+  <path d="M108,42 C90,44 84,60 88,80 L108,88 L128,80 C132,60 126,44 108,42 Z" fill="url(#navyIce)" stroke="#e2e8f0" stroke-width="2"/>
+  <rect x="96" y="62" width="24" height="5" rx="2" fill="#bae6fd" filter="url(#glow)"/>
+  <path d="M62,92 C78,78 138,78 154,92 L164,132 L144,138 L138,180 L78,180 L72,138 L52,132 Z" fill="url(#navyIce)" stroke="#cbd5e1" stroke-width="2.2"/>
+  <polygon points="108,96 120,118 108,148 96,118" fill="#bae6fd" filter="url(#glow)"/>
+  <!-- Heavy Arms & Legs -->
+  <path d="M148,122 L176,160 L166,172 L136,136 Z" fill="url(#navyIce)" stroke="#cbd5e1" stroke-width="1.6"/>
+  <path d="M68,122 L50,168 L64,174 L80,136 Z" fill="url(#navyIce)" stroke="#cbd5e1" stroke-width="1.6"/>
+  <path d="M80,182 L104,182 L100,256 L74,256 Z" fill="url(#navyIce)" stroke="#cbd5e1" stroke-width="1.8"/>
+  <path d="M112,182 L136,182 L142,256 L116,256 Z" fill="url(#navyIce)" stroke="#cbd5e1" stroke-width="1.8"/>
+  <!-- Floating Ice Shards -->
+  <polygon points="36,78 44,64 50,82 42,92" fill="#bae6fd" opacity="0.85" filter="url(#glow)"/>
+  <polygon points="40,196 48,184 54,202 44,210" fill="#7dd3fc" opacity="0.8" filter="url(#glow)"/>
+  <polygon points="204,166 212,152 218,170 208,178" fill="#e0f2fe" opacity="0.85" filter="url(#glow)"/>
+  <ellipse cx="108" cy="264" rx="64" ry="8" fill="#38bdf8" opacity="0.3"/>
+</svg>

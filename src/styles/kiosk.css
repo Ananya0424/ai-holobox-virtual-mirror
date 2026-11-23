@@ -48,7 +48,7 @@ html, body {
   padding: 0;
   overflow: hidden;
   overscroll-behavior: none;
-  background-color: #060913;
+  background-color: #ffffff;
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text-primary);
   touch-action: manipulation;
@@ -61,7 +61,7 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #060913;
+  background: #ffffff;
 }
 
 /* On standard desktop widescreen monitors (during laptop testing), 
@@ -100,7 +100,7 @@ html, body {
 /* When the browser runs in Kiosk or Fullscreen mode (F11) */
 :fullscreen,
 :-webkit-full-screen {
-  background: #000000;
+  background: #ffffff;
 }
 
 @media (orientation: portrait) {

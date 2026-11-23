@@ -1363,6 +1363,49 @@
   animation: liveRecordPulse 1.2s infinite ease-in-out;
 }
 
+.custom-quick-chips-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 16px;
+  width: 100%;
+}
+
+.custom-quick-chips-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.custom-quick-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.custom-quick-chip-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.custom-quick-chip-btn:hover,
+.custom-quick-chip-btn:active {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0369a1;
+  transform: scale(0.97);
+}
+
 .custom-luxury-submit-btn {
   width: 100%;
   padding: 15px;
@@ -1988,7 +2031,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #020617;
+  background: #ffffff;
   overflow: hidden;
 }
 
@@ -1998,9 +2041,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 18px;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
   z-index: 20;
 }
 
@@ -2008,9 +2052,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f8fafc;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
   padding: 8px 14px;
   border-radius: 9999px;
   font-size: 13px;
@@ -2021,7 +2065,7 @@
 
 .kiosk-nav-back-btn:active {
   transform: scale(0.96);
-  background: rgba(255, 255, 255, 0.2);
+  background: #e2e8f0;
 }
 
 .kiosk-header-text-block {
@@ -2031,13 +2075,13 @@
 .kiosk-main-title {
   font-size: 17px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #0f172a;
   letter-spacing: -0.3px;
 }
 
 .kiosk-sub-title {
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 500;
 }
 
@@ -2047,7 +2091,7 @@
   width: 100%;
   height: calc(100% - 64px);
   overflow: hidden;
-  background: #000000;
+  background: #ffffff;
 }
 
 .camera-video-feed {
@@ -2073,11 +2117,13 @@
 
 .framing-silhouette-svg {
   position: absolute;
-  top: 6%;
-  width: 82%;
-  height: 74%;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 90%;
+  opacity: 0.88;
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.45));
 }
 
 .camera-alignment-pill {
@@ -2086,15 +2132,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(14, 165, 233, 0.7);
   border-radius: 9999px;
-  padding: 7px 16px;
-  color: #e2e8f0;
+  padding: 7px 18px;
+  color: #0f172a;
   font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
 }
 
 .camera-shutter-bar {
@@ -2174,24 +2220,25 @@
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.68);
-  backdrop-filter: blur(10px);
-  border: 3px solid #38bdf8;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 3.5px solid #0284c7;
+  color: #0284c7;
   font-family: 'Space Grotesk', sans-serif;
   font-size: 32px;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.55);
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.25);
 }
 
 .auto-countdown-label {
   font-size: 11px;
   font-weight: 700;
-  color: #ffffff;
-  background: rgba(15, 23, 42, 0.65);
+  color: #0369a1;
+  background: rgba(240, 249, 255, 0.95);
+  border: 1px solid #bae6fd;
   padding: 3px 10px;
   border-radius: 9999px;
   letter-spacing: 0.4px;
@@ -2455,7 +2502,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center center;
+  object-position: center bottom;
   z-index: 2;
   mix-blend-mode: multiply;
   pointer-events: none;
@@ -2677,6 +2724,42 @@
   padding: 4px 10px;
   border-radius: 9999px;
   border: 1px solid #e2e8f0;
+}
+
+.studio-extend-time-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  color: #0369a1;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.studio-extend-time-btn:active {
+  background: #bae6fd;
+  transform: scale(0.95);
+}
+
+.studio-text-link-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.studio-text-link-btn:hover {
+  color: #0f172a;
 }
 
 .studio-preview-footer {
@@ -2959,4 +3042,265 @@
   0% { transform: translate3d(0px, -6px, 0); opacity: 0.5; }
   50% { transform: translate3d(-7px, 10px, 0); opacity: 0.95; }
   100% { transform: translate3d(5px, 20px, 0); opacity: 0.55; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ULTRA-LUXURY 3D POP-OUT TYPOGRAPHY & INTERACTIVE DEPTH ANIMATIONS
+   ════════════════════════════════════════════════════════════════════ */
+
+@keyframes popOutHeading3D {
+  0% {
+    opacity: 0;
+    transform: perspective(600px) translateZ(-80px) translateY(-22px) scale(0.82);
+    filter: blur(8px);
+  }
+  65% {
+    opacity: 1;
+    transform: perspective(600px) translateZ(30px) translateY(2px) scale(1.06);
+    filter: blur(0px);
+  }
+  85% {
+    transform: perspective(600px) translateZ(-10px) translateY(-1px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(600px) translateZ(0) translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes popOutSubtitle3D {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+    filter: blur(4px);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardPopOut3D {
+  0% {
+    opacity: 0;
+    transform: perspective(800px) translateZ(-60px) translateY(32px) scale(0.88);
+  }
+  65% {
+    opacity: 1;
+    transform: perspective(800px) translateZ(20px) translateY(-4px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(800px) translateZ(0) translateY(0) scale(1);
+  }
+}
+
+@keyframes holoBeamPulse {
+  0%, 100% {
+    opacity: 0.72;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scaleX(1.06);
+  }
+}
+
+@keyframes holoScanLaserSweep {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 96%;
+    opacity: 0;
+  }
+}
+
+@keyframes pedestalSpin3D {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes neonPillarGlow {
+  0%, 100% {
+    opacity: 0.65;
+    filter: drop-shadow(0 0 10px #38bdf8);
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 20px #818cf8);
+  }
+}
+
+/* Master Pop-Out Class Names */
+.popout-heading-luxury {
+  animation: popOutHeading3D 0.85s cubic-bezier(0.16, 1.25, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.popout-sub-luxury {
+  animation: popOutSubtitle3D 0.8s cubic-bezier(0.16, 1.2, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.popout-card-3d {
+  animation: cardPopOut3D 0.9s cubic-bezier(0.16, 1.2, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HOLOBOX 3D PHYSICAL GLASS CABINET CHAMBER STYLING
+   ════════════════════════════════════════════════════════════════════ */
+
+.holobox-3d-chamber-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 25%, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+}
+
+/* Overhead Conical Studio Spotlight from Ceiling */
+.holobox-top-spotlight {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 820px;
+  height: 850px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.98) 0%, rgba(56, 189, 248, 0.22) 40%, rgba(129, 140, 248, 0.08) 65%, transparent 80%);
+  pointer-events: none;
+  z-index: 1;
+  animation: holoBeamPulse 4.5s ease-in-out infinite;
+}
+
+/* Left & Right Internal Neon LED Chamber Edge Pillars */
+.holobox-side-pillar-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  background: linear-gradient(180deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.8), 6px 0 35px rgba(129, 140, 248, 0.35);
+  z-index: 15;
+  pointer-events: none;
+  animation: neonPillarGlow 3.5s ease-in-out infinite;
+}
+
+.holobox-side-pillar-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 5px;
+  background: linear-gradient(180deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.8), -6px 0 35px rgba(129, 140, 248, 0.35);
+  z-index: 15;
+  pointer-events: none;
+  animation: neonPillarGlow 3.5s ease-in-out infinite;
+}
+
+/* 3D Perspective Volumetric Floor Laser Pedestal Platform Under Feet */
+.holobox-floor-pedestal-3d {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) perspective(700px) rotateX(72deg);
+  width: 520px;
+  height: 220px;
+  pointer-events: none;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pedestal-outer-laser-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid rgba(14, 165, 233, 0.85);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.7), inset 0 0 30px rgba(56, 189, 248, 0.45);
+  animation: pedestalSpin3D 24s linear infinite;
+}
+
+.pedestal-inner-laser-ring {
+  position: absolute;
+  width: 76%;
+  height: 76%;
+  border-radius: 50%;
+  border: 2px dashed rgba(168, 85, 247, 0.85);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.6);
+  animation: pedestalSpin3D 16s linear infinite reverse;
+}
+
+.pedestal-center-core-glow {
+  position: absolute;
+  width: 55%;
+  height: 55%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.45) 0%, rgba(139, 92, 246, 0.2) 60%, transparent 80%);
+  filter: blur(8px);
+}
+
+.pedestal-contact-drop-shadow {
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 360px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.65) 0%, rgba(15, 23, 42, 0.3) 45%, transparent 75%);
+  filter: blur(10px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Front Glass Reflective Sheen Across Holobox Door */
+.holobox-glass-front-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, transparent 38%, rgba(255, 255, 255, 0.22) 46%, rgba(255, 255, 255, 0.32) 50%, rgba(255, 255, 255, 0.08) 54%, transparent 64%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Holographic Laser Entrance Scan Line */
+.holobox-laser-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 0%, #38bdf8 30%, #ffffff 50%, #38bdf8 70%, transparent 100%);
+  box-shadow: 0 0 20px #38bdf8, 0 0 40px rgba(14, 165, 233, 0.8);
+  z-index: 22;
+  pointer-events: none;
+  animation: holoScanLaserSweep 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }

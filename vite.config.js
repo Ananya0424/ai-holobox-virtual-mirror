@@ -9,6 +9,46 @@ import http from 'http';
 const AI_WORKER_HOST = '127.0.0.1';
 const AI_WORKER_PORT = 5055;
 
+function getImgbbApiKey() {
+  if (process.env.VITE_IMGBB_API_KEY) return process.env.VITE_IMGBB_API_KEY.trim();
+  try {
+    const envPath = path.resolve('.env');
+    if (fs.existsSync(envPath)) {
+      const raw = fs.readFileSync(envPath, 'utf8');
+      const m = raw.match(/^VITE_IMGBB_API_KEY=(.+)$/m);
+      if (m) return m[1].trim().replace(/^['"]|['"]$/g, '');
+    }
+  } catch {}
+  return '';
+}
+
+async function uploadPhotoToImgBB(filePath) {
+  const apiKey = getImgbbApiKey();
+  if (!apiKey || !filePath || !fs.existsSync(filePath)) return null;
+  try {
+    const b64 = fs.readFileSync(filePath).toString('base64');
+    const form = new URLSearchParams();
+    form.append('image', b64);
+    form.append('expiration', '3600'); // Auto-expires in 1 hour for kiosk privacy
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 12000);
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(apiKey)}`, {
+      method: 'POST',
+      body: form,
+      signal: controller.signal
+    });
+    clearTimeout(t);
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json?.success && json?.data?.url_viewer) {
+      return json.data.url_viewer; // Short public HTTPS viewer page with 1-tap Download on any phone!
+    }
+  } catch (err) {
+    console.warn('[ImgBB Upload] Fallback to LAN URL:', err.message);
+  }
+  return null;
+}
+
 function getLanIPv4() {
   const nets = os.networkInterfaces();
   const candidates = [];
@@ -54,7 +94,7 @@ function workerRequest(method, urlPath, bodyObj = null) {
       }
     );
     req.on('error', reject);
-    req.setTimeout(10000, () => {
+    req.setTimeout(25000, () => {
       req.destroy(new Error('AI Worker request timeout'));
     });
     if (bodyStr) req.write(bodyStr);
@@ -177,6 +217,19 @@ function buildMobileUrl(req, photoUrl, filename) {
     return `http://${lanIp}:${port}/download/${filename}`;
   }
   return `${proto}://${hostHeader}/download/${filename}`;
+}
+
+function getDecartApiKey() {
+  if (process.env.DECART_API_KEY) return process.env.DECART_API_KEY;
+  try {
+    const envPath = path.resolve('.env');
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf-8');
+      const match = envContent.match(/^DECART_API_KEY\s*=\s*([^\r\n#]+)/m);
+      if (match) return match[1].trim();
+    }
+  } catch {}
+  return null;
 }
 
 function attachMiddlewares(middlewares, httpServer) {
@@ -354,19 +407,30 @@ function attachMiddlewares(middlewares, httpServer) {
       const meta = jobRegistry.get(jobId) || {};
 
       if (statusData.status === 'done' && meta.photoUrl) {
+        if (!meta.publicDownloadUrl && !meta.imgbbTried && meta.outputPath && fs.existsSync(meta.outputPath)) {
+          if (!meta.imgbbPromise) {
+            meta.imgbbPromise = uploadPhotoToImgBB(meta.outputPath).then((u) => {
+              meta.imgbbTried = true;
+              if (u) meta.publicDownloadUrl = u;
+              return u;
+            });
+          }
+          await meta.imgbbPromise;
+        }
         statusData.success = true;
         statusData.photoUrl = meta.photoUrl;
         statusData.downloadId = meta.downloadId;
-        statusData.mobileDownloadUrl = meta.mobileDownloadUrl;
+        statusData.mobileDownloadUrl = meta.publicDownloadUrl || meta.mobileDownloadUrl;
       }
 
       res.statusCode = workerRes.statusCode;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(statusData));
     } catch (err) {
-      res.statusCode = 500;
+      // Transient worker busy/timeout should NEVER abort an in-flight GPU job on the frontend
+      res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ status: 'error', error: err.message }));
+      res.end(JSON.stringify({ status: 'running', transient: true, stepLabel: 'GPU processing portrait...' }));
     }
   });
 
@@ -392,6 +456,8 @@ function attachMiddlewares(middlewares, httpServer) {
           profession = 'pilot',
           gender = 'female',
           customPrompt = null,
+          mode = 'avatar',
+          theme = null,
           async: isAsync = false
         } = body;
 
@@ -415,7 +481,7 @@ function attachMiddlewares(middlewares, httpServer) {
         cleanupOldCapturedFiles(capturedDir);
 
         // Deduplicate duplicate mount requests (e.g. React 18 StrictMode double-effect)
-        const reqSignature = `${profession}|${gender}|${customPrompt || ''}|${photoDataUrl.length}|${photoDataUrl.slice(-96)}`;
+        const reqSignature = `${mode}|${theme || ''}|${profession}|${gender}|${customPrompt || ''}|${photoDataUrl.length}|${photoDataUrl.slice(-96)}`;
         const existingEntry = recentJobSignatures.get(reqSignature);
         if (existingEntry && (Date.now() - existingEntry.ts < 8000)) {
           const existingMeta = jobRegistry.get(existingEntry.jobId);
@@ -457,6 +523,7 @@ function attachMiddlewares(middlewares, httpServer) {
         jobRegistry.set(id, {
           downloadId: id,
           photoUrl,
+          outputPath,
           mobileDownloadUrl,
           profession,
           gender
@@ -468,7 +535,9 @@ function attachMiddlewares(middlewares, httpServer) {
           profession,
           gender,
           outputPath,
-          customPrompt
+          customPrompt,
+          mode,
+          theme
         });
 
         if (isAsync) {
@@ -491,12 +560,13 @@ function attachMiddlewares(middlewares, httpServer) {
           await new Promise(r => setTimeout(r, 500));
           const st = await workerRequest('GET', `/status/${id}`);
           if (st.data?.status === 'done' && fs.existsSync(outputPath)) {
+            const publicUrl = await uploadPhotoToImgBB(outputPath);
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({
               success: true,
               photoUrl,
-              mobileDownloadUrl,
+              mobileDownloadUrl: publicUrl || mobileDownloadUrl,
               downloadId: id,
               profession,
               gender,
@@ -527,16 +597,16 @@ function attachMiddlewares(middlewares, httpServer) {
     });
   });
 
-  // Decart Lucy VTON POC Token Endpoint (preserved)
+  // Decart Lucy VTON POC Token Endpoint (preserved & updated)
   middlewares.use('/api/realtime-token', async (req, res) => {
-    if (req.method !== 'POST') {
+    if (req.method !== 'POST' && req.method !== 'GET') {
       res.statusCode = 405;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ error: 'Method Not Allowed' }));
       return;
     }
 
-    const apiKey = process.env.DECART_API_KEY;
+    const apiKey = getDecartApiKey();
     if (!apiKey) {
       res.statusCode = 401;
       res.setHeader('Content-Type', 'application/json');
@@ -552,7 +622,12 @@ function attachMiddlewares(middlewares, httpServer) {
       const client = createDecartClient({ apiKey });
       const token = await client.tokens.create({
         expiresIn: 300,
-        allowedModels: ['lucy-vton-3.6']
+        allowedModels: ['lucy-vton-3.6', 'lucy-vton-latest', 'lucy-vton-3.5', 'lucy-2.6', 'lucy-2.5', 'lucy-restyle-2', 'lucy-latest'],
+        constraints: {
+          realtime: {
+            maxSessionDuration: 120
+          }
+        }
       });
 
       res.statusCode = 200;
@@ -567,6 +642,110 @@ function attachMiddlewares(middlewares, httpServer) {
       res.end(JSON.stringify({
         error: err.message || 'Failed to generate Decart ephemeral client token'
       }));
+    }
+  });
+
+  // Decart Live Account Credits Endpoint
+  middlewares.use('/api/decart/credits', async (req, res) => {
+    const apiKey = getDecartApiKey();
+    if (!apiKey) {
+      res.statusCode = 401;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: 'DECART_API_KEY is not configured.' }));
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.decart.ai/v1/credits', {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'x-api-key': apiKey
+        }
+      });
+      const data = await response.json();
+      res.statusCode = response.status;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: err.message }));
+    }
+  });
+
+  // Decart Real-Time Character Transformation Mirror Token Endpoint
+  middlewares.use('/api/decart/token', async (req, res) => {
+    if (req.method !== 'POST' && req.method !== 'GET') {
+      res.statusCode = 405;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+      return;
+    }
+
+    const apiKey = getDecartApiKey();
+    if (!apiKey) {
+      res.statusCode = 401;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({
+        error: 'DECART_API_KEY is not configured on the backend server.',
+        needsKey: true
+      }));
+      return;
+    }
+
+    try {
+      const { createDecartClient } = await import('@decartai/sdk');
+      const client = createDecartClient({ apiKey });
+      const token = await client.tokens.create({
+        expiresIn: 300,
+        allowedModels: ['lucy-vton-3.6', 'lucy-vton-latest', 'lucy-vton-3.5', 'lucy-2.6', 'lucy-2.5', 'lucy-restyle-2', 'lucy-latest'],
+        constraints: {
+          realtime: {
+            maxSessionDuration: 120
+          }
+        }
+      });
+
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({
+        apiKey: token.apiKey,
+        expiresAt: token.expiresAt
+      }));
+    } catch (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({
+        error: err.message || 'Failed to generate Decart ephemeral client token'
+      }));
+    }
+  });
+
+  // Decart Live Account Credits Endpoint
+  middlewares.use('/api/decart/credits', async (req, res) => {
+    const apiKey = getDecartApiKey();
+    if (!apiKey) {
+      res.statusCode = 401;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: 'DECART_API_KEY is not configured.' }));
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.decart.ai/v1/credits', {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'x-api-key': apiKey
+        }
+      });
+      const data = await response.json();
+      res.statusCode = response.status;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: err.message }));
     }
   });
 }

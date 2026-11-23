@@ -155,7 +155,35 @@ export default function CustomLookPrompt({ gender, isOpen, onClose, onApplyCusto
           </p>
         )}
 
-        {/* 3. Refined Submit Button */}
+        {/* 3. Quick-Tap Idea Chips (Instant 1-tap touch selection for Holobox) */}
+        <div className="custom-quick-chips-container">
+          <span className="custom-quick-chips-label">Popular Ideas (Tap to fill):</span>
+          <div className="custom-quick-chips-grid">
+            {[
+              { label: '👑 Royal Traditional', prompt: gender === 'female' ? 'royal Indian traditional red silk lehenga with delicate gold embroidery and jewelry' : 'royal Indian regal velvet sherwani with gold embroidery' },
+              { label: '👨‍🍳 Master Chef', prompt: 'master chef in tailored black double-breasted cotton chef jacket with apron' },
+              { label: '🏎️ F1 Racer', prompt: 'Formula 1 racing driver in tailored red team racing firesuit with athletic sneakers' },
+              { label: '🧥 Luxury Trench', prompt: 'chic autumn beige trench coat over tailored white shirt and slim trousers' },
+              { label: '🎸 Rock Musician', prompt: 'rock musician in authentic black leather biker jacket and fitted jeans' },
+              { label: '🥋 Martial Artist', prompt: 'traditional martial arts master in clean woven white cotton gi with black belt' },
+            ].map((chip) => (
+              <button
+                key={chip.label}
+                type="button"
+                className="custom-quick-chip-btn"
+                onClick={() => {
+                  playAudio.click();
+                  setPromptText(chip.prompt);
+                  if (validationError) setValidationError(null);
+                }}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 4. Refined Submit Button */}
         <button
           type="button"
           className="custom-luxury-submit-btn"

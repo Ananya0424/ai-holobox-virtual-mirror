@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <defs>
+    <linearGradient id="bg_06b6d4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09090b"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <radialGradient id="glow_06b6d4" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="200" height="240" rx="16" fill="url(#bg_06b6d4)" />
+  <rect x="2" y="2" width="196" height="236" rx="14" fill="none" stroke="#06b6d4" stroke-opacity="0.5" stroke-width="1.5" />
+  <circle cx="100" cy="90" r="60" fill="url(#glow_06b6d4)" />
+  <circle cx="100" cy="90" r="30" fill="#f472b6" opacity="0.3"/>
+   <rect x="70" y="80" width="60" height="16" rx="4" fill="#06b6d4" stroke="#f43f5e" stroke-width="2"/>
+   <line x1="75" y1="88" x2="125" y2="88" stroke="#ffffff" stroke-width="2"/>
+   <path d="M60 135 Q100 120 140 135 L150 170 L50 170 Z" fill="#18181b" stroke="#06b6d4" stroke-width="2"/>
+   <line x1="75" y1="135" x2="75" y2="170" stroke="#f43f5e" stroke-width="2"/>
+   <line x1="125" y1="135" x2="125" y2="170" stroke="#f43f5e" stroke-width="2"/>
+  <rect x="10" y="174" width="180" height="54" rx="10" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="100" y="196" fill="#ffffff" font-family="'Space Grotesk', -apple-system, sans-serif" font-weight="800" font-size="12" text-anchor="middle" letter-spacing="0.5">Cyberpunk</text>
+  <text x="100" y="214" fill="#94a3b8" font-family="-apple-system, sans-serif" font-weight="500" font-size="9.5" text-anchor="middle">Hacking the Night</text>
+</svg>

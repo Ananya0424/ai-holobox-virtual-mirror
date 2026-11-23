@@ -27,15 +27,15 @@ export default function CategorySelection({ onSelectCategory }) {
 
       {/* 1. Premium Heading & Subtitle */}
       <div className="category-header-zone">
-        <div className="category-header-sparkle-pill">
-          <Sparkles size={13} color="#0ea5e9" />
-          <span>PORTRAIT SELECTION</span>
+        <div className="category-header-sparkle-pill popout-sub-luxury">
+          <Sparkles size={14} color="#0284c7" />
+          <span>HOLOBOX IDENTITY MATRIX</span>
         </div>
-        <h1 className="category-title-main">
-          YOUR TRANSFORMATION BEGINS HERE
+        <h1 className="category-title-main popout-heading-luxury" style={{ letterSpacing: '-0.4px', textTransform: 'none', fontSize: '32px' }}>
+          Who Will You Become Today?
         </h1>
-        <p className="category-subtitle-text">
-          Choose your identity and explore a new dimension of yourself.
+        <p className="category-subtitle-text popout-sub-luxury">
+          Select your avatar vessel to begin your 3D Holobox transformation
         </p>
       </div>
 

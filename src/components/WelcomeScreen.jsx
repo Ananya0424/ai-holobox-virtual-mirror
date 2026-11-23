@@ -46,11 +46,33 @@ export default function WelcomeScreen({ onStart }) {
       <div className="welcome-interactive-layer">
         {/* Top Branding Section (Positioned Higher Up, Single Line Heading) */}
         <div className="welcome-top-branding">
-          <h1 className="welcome-main-heading">
+          <div
+            className="popout-sub-luxury"
+            style={{
+              background: 'rgba(255, 255, 255, 0.92)',
+              border: '1.5px solid rgba(56, 189, 248, 0.5)',
+              boxShadow: '0 4px 16px rgba(14, 165, 233, 0.25)',
+              padding: '6px 18px',
+              borderRadius: '9999px',
+              fontSize: '11px',
+              fontWeight: 800,
+              letterSpacing: '1px',
+              color: '#0284c7',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginBottom: '12px'
+            }}
+          >
+            <span>✦</span>
+            <span>NEXT-GEN AI HOLOBOX</span>
+            <span>✦</span>
+          </div>
+          <h1 className="welcome-main-heading popout-heading-luxury" style={{ letterSpacing: '-0.4px', textTransform: 'none', fontSize: '32px' }}>
             Interactive Virtual Mirror
           </h1>
-          <p className="welcome-sub-tagline">
-            Step into a new you!
+          <p className="welcome-sub-tagline popout-sub-luxury" style={{ fontSize: '13px' }}>
+            Step into the holographic future — Reimagine your identity in 3D
           </p>
         </div>
 

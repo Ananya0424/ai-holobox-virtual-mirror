@@ -1,126 +1,139 @@
-# AI-Powered Interactive Holobox Virtual Mirror
+# 🪞 AI-Powered Interactive Virtual Mirror (Holobox)
 
-A premium, futuristic, portrait-oriented (9:16) AI-powered Interactive Virtual Mirror web application designed for kiosk enclosures, Holobox hardware, and modern browsers.
+An AI-powered Interactive Virtual Mirror built for **Holobox hardware, touch kiosks, and exhibition displays**. 
 
----
-
-## 🌟 Key Highlights & Features
-
-1. **9:16 Portrait Kiosk Design**
-   - Strictly engineered in vertical portrait orientation (9:16).
-   - Off-white/bright holographic aesthetic (`#f8fafc`, `#ffffff`) with glowing cyan (`#38bdf8`) and subtle purple (`#8b5cf6`) accents.
-   - Fluid glassmorphism, animated holographic reticles, and subtle floating particles.
-
-2. **Welcome Screen with Looping Promotional Video**
-   - Autonomous looping background video (`/promo-video.mp4`).
-   - Separate, interactive web **START** button with sound synthesis and particle glow.
-
-3. **Manual Gender Category Selection**
-   - Large interactive cards for **Male** and **Female** collections.
-   - Manual user selection without intrusive automated classification.
-
-4. **Real Full-Body Biometric Scanning**
-   - Browser camera access via `navigator.mediaDevices.getUserMedia`.
-   - MediaPipe Pose skeleton detection with real-time landmark tracking.
-   - Calculates anatomical proportions: estimated height, shoulder width ratio, torso index, arm span, and posture alignment.
-   - Animated holographic laser beam and progress gauge with sound cues.
-
-5. **Horizontal Avatar Carousel with 6th Custom Look (?)**
-   - Male Collection: Pilot, Doctor, Astronaut, Police Officer, Business Professional.
-   - Female Collection: Air Hostess, Doctor, Astronaut, Pilot, Business Professional.
-   - **6th Option ("? Custom Look")**: Appears seamlessly alongside the other 5 cards with the identical card size and style.
-   - Selecting "?" opens the **AI Custom Look Prompt Modal** featuring:
-     - Text input field
-     - Microphone button powered by the Web Speech API (`SpeechRecognition`)
-     - Smart NLP prompt parser that configures the corresponding 3D avatar wardrobe and color styling.
-
-6. **Live Mirror Experience (Three.js 3D Rigged Humanoid Avatar)**
-   - Three.js WebGL 3D humanoid avatar with skeletal bone hierarchy.
-   - Real-time skeleton retargeting driven by MediaPipe Pose landmarks (mirrors user's arms, head tilt, torso sway, and posture).
-   - Dynamic 3D profession wardrobe equipping (doctor coats, spacesuits, captain uniforms, tactical vests, power suits).
-   - User identity preservation via live video face projection and proportional bone scaling, with clear in-app technical documentation on client browser vs cloud neural mesh limits.
-
-7. **Profession-Based Dynamic Holographic 3D Decorations**
-   - Left and right flanking 3D elements that float, bob, rotate, and never obstruct the user:
-     - **Doctor**: Medical crosses, pulsing ECG heartbeat line, rotating DNA double-helix.
-     - **Astronaut**: Revolving Saturn-ringed planet, celestial orbit rings, satellite, twinkling star particles.
-     - **Pilot**: Supersonic aircraft silhouettes, heading compass, altitude ladder lines.
-     - **Air Hostess**: Holographic wireframe globe, travel waypoint ring, mini plane, luggage silhouette.
-     - **Police Officer**: 3D glowing protective shields, tactical blue & amber particle streams.
-     - **Business**: Minimalist floating glass prisms, rotating polyhedra, financial stock trend line.
-     - **Custom**: Dual-toned cyber polyhedra and energetic particle fountains.
-
-8. **Photo Capture with 5-Second Countdown**
-   - Shutter button triggers a 5-second countdown HUD with synthesized audio beeps.
-   - Camera flash screen effect and high-resolution canvas capture.
-
-9. **Side-by-Side Photo Preview & Real QR Code Generator**
-   - Displays captured photo on the same screen with two main buttons:
-     - **Retake**: Returns to the live mirror while preserving the chosen avatar and outfit.
-     - **Scan**: Generates a real, scannable QR code on the **SAME SCREEN** without page redirection.
-   - Instant file download button for testing.
-
-10. **30-Second Timeout & End Screen**
-    - 30-second live expiration timer on the QR code.
-    - Transitions to *"Thank You for Experiencing Holobox!"*.
-    - Automatically returns to the Welcome Screen and restarts the looping video for the next visitor.
+When a user stands in front of the mirror, the camera captures their photo, detects their pose (like raising a hand or waving), and generates a photorealistic portrait of the user wearing different professional uniforms (Doctor, Pilot, Astronaut, etc.) or any custom outfit they want—keeping their **real face, glasses, and exact pose intact** in just **12–15 seconds**!
 
 ---
 
-## 📁 Project Architecture & File Structure
+## 🚀 How the Mirror Works (Simple Step-by-Step)
 
-```
-AI-powered Interactive Virtual Mirror/
-├── index.html                   # HTML entry point, fonts, & MediaPipe scripts
-├── package.json                 # Dependencies (React, Three.js, Lucide, QRCode, Vite)
-├── vite.config.js               # Vite bundler configuration (port 3000)
-├── public/
-│   └── promo-video.mp4          # Generated 9:16 looping futuristic promotional video
-├── scripts/
-│   └── generate_promo_video.js  # Node.js + FFmpeg video generation utility
-└── src/
-    ├── main.jsx                 # React root renderer
-    ├── App.jsx                  # Main kiosk state machine & screen orchestrator
-    ├── components/
-    │   ├── KioskFrame.jsx       # 9:16 vertical viewport frame, holographic corners & HUD
-    │   ├── WelcomeScreen.jsx    # Looping video background + separate START button
-    │   ├── CategorySelection.jsx# Male / Female manual selection cards
-    │   ├── CameraScanner.jsx    # Real-time camera scanner & proportion estimator
-    │   ├── AvatarCarousel.jsx   # Horizontal carousel (5 avatars + 6th '?' card)
-    │   ├── CustomLookPrompt.jsx # Voice/text input modal for custom persona
-    │   ├── LiveMirror.jsx       # Full-body 3D live mirror viewport
-    │   ├── AvatarRenderer.js    # Three.js 3D rigged humanoid skeleton & wardrobes
-    │   ├── DynamicDecorations.js# 3D animated profession decorations (left & right)
-    │   ├── PhotoCapture.jsx     # 5-second countdown & flash overlay
-    │   ├── PhotoPreview.jsx     # Side-by-side photo preview & real QR code generator
-    │   └── ThankYouScreen.jsx   # 30-second timeout thank-you screen
-    ├── utils/
-    │   ├── audio.js             # Synthesized Web Audio API sound effects (zero files needed)
-    │   ├── avatarData.js        # Avatar definitions, badges, & NLP prompt parser
-    │   └── poseDetector.js      # MediaPipe Pose tracking & smoothing engine
-    └── styles/
-        ├── kiosk.css            # 9:16 aspect ratio enclosure & holographic borders
-        └── index.css            # Screen-specific styles, glassmorphism, animations
+```text
+1. User stands in front of the Holobox Mirror.
+                │
+                ▼
+2. Camera starts a 20-second countdown with an on-screen body guide.
+                │
+                ▼
+3. User selects an outfit (or types/speaks a custom look).
+                │
+                ▼
+4. AI detects user's face and live pose (e.g., Hand Up).
+                │
+                ▼
+5. Stable Diffusion generates the uniform around the user's real face in their exact pose.
+                │
+                ▼
+6. System removes room background and adds a soft floor shadow under the shoes.
+                │
+                ▼
+7. User scans the QR code with their mobile phone to download and save their portrait!
 ```
 
 ---
 
-## 🚀 How to Run the Application
+## 🧠 AI Models Used & What They Do
 
-1. **Install dependencies** (if not already installed):
-   ```bash
-   npm install
-   ```
+Here is the list of all AI models used in this project, explained in simple words:
 
-2. **Start the local development server**:
-   ```bash
-   npm run dev
-   ```
+| # | Model Name | Simple Explanation | What it Does in this Project |
+|---|---|---|---|
+| **1** | **Stable Diffusion 1.5** | AI Image Generator | Draws the realistic clothing, fabric textures, and studio lighting (e.g., Doctor white coat, Pilot uniform, Astronaut suit). |
+| **2** | **IP-Adapter FaceID-PlusV2** | Face Transfer Tool | Locks the user's **real face, eyes, smile, and glasses** onto the new uniform so the photo looks genuinely like them. |
+| **3** | **InsightFace (Buffalo_L)** | Face Scanner | Scans the webcam photo and measures facial features into mathematical data so FaceID knows where the eyes, nose, and lips are. |
+| **4** | **ControlNet OpenPose** | Body Skeleton Controller | Makes sure the AI body stands naturally with realistic human proportions (correct arms, shoulders, and legs). |
+| **5** | **MediaPipe Pose** | Live Gesture Detector | Detects the user's live physical poses (like **Hand Raised**, waving, or pointing) and makes the AI generate the person in that exact same pose. |
+| **6** | **BiRefNet / Rembg** | Background Remover | Cuts out the user cleanly from the room background and places them on a clean white studio canvas. |
 
-3. **Open in your browser**:
-   Navigate to `http://localhost:3000` (or the URL output by Vite).
+---
 
-4. **Production Build**:
-   ```bash
-   npm run build
-   ```
+## 🌐 Cloud APIs Used
+
+* **Google Gemini AI API (`gemini-flash-lite-latest`)**:
+  - Used for the **"Customize Your Look"** feature.
+  - When a user speaks or types an outfit idea (like *"Royal Wedding Sherwani"* or *"Master Chef"*), Gemini understands the request and creates a creative title and holographic compliment.
+* **Web Speech API**:
+  - Allows users to speak into the mirror's microphone instead of typing.
+
+---
+
+## ✨ Key Features of the Mirror
+
+### 1. 🙋‍♀️ Dynamic Pose Transfer (Hand Raised / Gestures)
+- The user does not have to stand like a statue.
+- If the user raises their hand or makes a gesture in front of the camera, the generated AI doctor or pilot will also have their hand raised in that **exact pose**!
+
+### 2. 👟 Grounded Studio Floor Shadow
+- Most AI cutouts look like they are floating in mid-air.
+- Our system calculates the exact position of the shoes and paints a realistic **soft dark contact shadow** on the floor so the person looks firmly grounded in the studio.
+
+### 3. 🎯 Easy Camera Framing & 20s Timer
+- An elegant **Face & Shoulder Guide** appears on the screen so the user knows where to stand.
+- A **20-second countdown timer** gives the user plenty of time to get ready and pose.
+
+### 4. 🎨 "Customize Your Look" (Any Outfit in the World)
+- Along with the 5 standard professions (Doctor, Pilot, Astronaut, Police, Business), users can choose **"Customize Your Look (?)"** to try **any outfit**:
+  - **Voice Input:** Tap the blue mic icon and speak your outfit.
+  - **Touch Keyboard:** Tap the box and type on the screen.
+  - **Quick Buttons:** Tap one of the ready-made buttons (*Royal Traditional, Master Chef, F1 Racer, Luxury Trench, Rock Musician, Martial Artist*).
+
+### 5. 📱 30-Second Mobile QR Download
+- When the photo is ready, a QR code appears on screen.
+- A **30-second timer** runs while the user scans it with their phone camera.
+- If the user needs more time, they can tap **`+30s More`** to keep the QR code open.
+- When time is up, the screen gives two clear options:
+  - **`Scan Again (+30s More)`**: Re-opens the QR code if their scan didn't finish.
+  - **`Start New Session`**: Resets the mirror for the next person in line.
+
+---
+
+## 💻 Hardware Requirements
+
+To run this AI pipeline fast (12–15 seconds per photo), the following hardware is needed:
+
+* **GPU:** NVIDIA Graphics Card with at least **6 GB VRAM** (e.g. RTX 3050, RTX 3060, or higher).
+* **RAM:** 12 GB – 16 GB System RAM.
+* **Storage:** 30 GB SSD space (to store the offline 15 GB AI models).
+* **Camera:** HD Webcam (1080p).
+* **Operating System:** Windows 10/11 or Ubuntu Linux.
+
+> **Why Free Hosting (like Render or Vercel) does not work:**  
+> Free websites only give 512 MB memory and zero graphics cards (GPU). Loading 15 GB AI models causes free cloud servers to crash immediately. Running it on the local NVIDIA laptop GPU is the best, fastest, and 100% free solution.
+
+---
+
+## 🚀 How to Start the Mirror
+
+### 1. Run on Local Kiosk (1-Click)
+In the project folder, simply double-click:
+```bat
+start_holobox_kiosk.bat
+```
+This automatically starts the AI GPU worker and opens the Holobox interface at `http://localhost:3000`.
+
+### 2. Share Live Online for Free (Cloudflare Tunnel)
+If you want to open the mirror on a phone or another screen over the internet for free:
+1. Double-click `start_holobox_kiosk.bat`.
+2. Double-click `share_online_link.bat`.
+3. It will give you a public link (like `https://...trycloudflare.com`) that works anywhere in the world!
+
+---
+
+## 📁 Main Files in the Project
+
+* `scripts/ai_worker.py`: Background Python service that keeps AI models loaded in GPU memory for fast generation.
+* `scripts/ai_transform.py`: The core AI pipeline (Stable Diffusion + FaceID + OpenPose + Studio Shadow).
+* `scripts/face_identity.py`: Code for InsightFace recognition and MediaPipe pose tracking.
+* `src/components/CameraCaptureScreen.jsx`: Camera screen with 20s timer and body guide.
+* `src/components/PhotoPreview.jsx`: Final photo display with QR code and 30s timer.
+* `src/components/CustomLookPrompt.jsx`: Popup modal for typing or speaking custom outfit ideas.
+* `start_holobox_kiosk.bat`: 1-click file to launch the mirror.
+* `share_online_link.bat`: 1-click file to get a free live public web link.
+
+---
+
+## 👩‍💻 Credits
+
+* **Project:** AI-Powered Interactive Virtual Mirror
+* **Developer:** Ananya Sharma
+* **Built With:** PyTorch, Diffusers, InsightFace, MediaPipe, React, Vite, Cloudflare

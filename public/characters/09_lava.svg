@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <defs>
+    <linearGradient id="bg_f97316" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#450a0a"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+    <radialGradient id="glow_f97316" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="200" height="240" rx="16" fill="url(#bg_f97316)" />
+  <rect x="2" y="2" width="196" height="236" rx="14" fill="none" stroke="#f97316" stroke-opacity="0.5" stroke-width="1.5" />
+  <circle cx="100" cy="90" r="60" fill="url(#glow_f97316)" />
+  <path d="M100 45 C75 45 68 75 68 100 C68 125 82 140 100 140 C118 140 132 125 132 100 C132 75 125 45 100 45 Z" fill="#1c1917" stroke="#ea580c" stroke-width="2"/>
+   <path d="M80 75 Q90 90 85 110 Q95 125 100 135" stroke="#f97316" stroke-width="3" fill="none"/>
+   <path d="M120 75 Q110 95 115 115" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
+   <circle cx="88" cy="90" r="4" fill="#fbbf24"/><circle cx="112" cy="90" r="4" fill="#fbbf24"/>
+  <rect x="10" y="174" width="180" height="54" rx="10" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="100" y="196" fill="#ffffff" font-family="'Space Grotesk', -apple-system, sans-serif" font-weight="800" font-size="12" text-anchor="middle" letter-spacing="0.5">Lava Elemental</text>
+  <text x="100" y="214" fill="#94a3b8" font-family="-apple-system, sans-serif" font-weight="500" font-size="9.5" text-anchor="middle">Volcanic Magma Behemoth</text>
+</svg>

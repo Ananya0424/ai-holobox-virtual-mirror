@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#7f1d1d" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#181210"/>
+      <stop offset="100%" stop-color="#070505"/>
+    </radialGradient>
+    <linearGradient id="obsidian" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3f3f46"/>
+      <stop offset="50%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </linearGradient>
+    <linearGradient id="fire" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="60%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fde047"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="240" height="300" rx="18" fill="url(#bg)"/>
+  <!-- Dragon Energy Aura -->
+  <path d="M40,220 C36,154 60,94 114,56 C168,94 196,154 192,220" fill="none" stroke="url(#fire)" stroke-width="2" opacity="0.45" filter="url(#glow)"/>
+  <!-- Horned Black & Gold Dragon Helmet -->
+  <path d="M96,52 C82,42 74,30 78,22 C86,32 96,38 104,46 Z" fill="url(#gold)"/>
+  <path d="M132,52 C146,42 154,30 150,22 C142,32 132,38 124,46 Z" fill="url(#gold)"/>
+  <path d="M114,44 C98,44 92,58 94,78 L114,88 L134,78 C136,58 130,44 114,44 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="2"/>
+  <polygon points="102,64 112,68 104,70" fill="#f97316" filter="url(#glow)"/>
+  <polygon points="126,64 116,68 124,70" fill="#f97316" filter="url(#glow)"/>
+  <!-- Black & Gold Dragon Scale Armour -->
+  <path d="M72,92 C86,80 142,80 156,92 L166,126 L146,132 L140,178 L88,178 L82,132 L62,126 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="2.2"/>
+  <path d="M114,96 L128,118 L114,154 L100,118 Z" fill="url(#fire)" opacity="0.9" filter="url(#glow)"/>
+  <!-- Left Arm -->
+  <path d="M76,120 L58,166 L70,172 L86,130 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="1.6"/>
+  <!-- Right Arm with Dragon-Shaped Gauntlet & Fire -->
+  <path d="M150,120 L174,156 L162,166 L140,132 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="1.6"/>
+  <g filter="url(#glow)">
+    <path d="M162,150 L198,142 L208,164 L194,180 L164,172 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="2.2"/>
+    <circle cx="190" cy="156" r="3" fill="#fde047"/>
+    <path d="M204,154 C218,146 226,162 214,174 C210,166 206,162 204,154 Z" fill="url(#fire)"/>
+  </g>
+  <!-- Greaves -->
+  <path d="M90,180 L112,180 L108,256 L84,256 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="1.8"/>
+  <path d="M116,180 L138,180 L144,256 L120,256 Z" fill="url(#obsidian)" stroke="url(#gold)" stroke-width="1.8"/>
+  <ellipse cx="114" cy="264" rx="64" ry="8" fill="#f97316" opacity="0.34"/>
+</svg>

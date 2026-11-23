@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowLeft, Sparkles } from 'lucide-react';
 import { AVATARS_BY_GENDER } from '../utils/avatarData';
 import { playAudio } from '../utils/audio';
 import CustomLookPrompt from './CustomLookPrompt';
 
-export default function AvatarCarousel({ gender, onSelectAvatar }) {
+export default function AvatarCarousel({ gender, onSelectAvatar, onBack }) {
   // Exactly 6 selectable items: 5 profession looks + 6th item Question Mark (?)
   const avatars = AVATARS_BY_GENDER[gender] || AVATARS_BY_GENDER.male;
 
@@ -138,11 +138,138 @@ export default function AvatarCarousel({ gender, onSelectAvatar }) {
         <div className="holo-glass-particle gp-4" />
       </div>
 
-      {/* 1. Premium Heading & Subtitle */}
-      <div className="luxury-screen-header">
-        <h1 className="luxury-screen-title">A New You, Reimagined</h1>
-        <p className="luxury-screen-subtitle">Your imagination. Your identity. Your transformation.</p>
-      </div>
+      {/* ════════════════════════════════════════════════════════════════════
+          ROW 1: DEDICATED TOP NAVIGATION BAR (Zero Overlap Guarantee)
+         ════════════════════════════════════════════════════════════════════ */}
+      <nav
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 22px 10px',
+          zIndex: 30,
+          position: 'relative'
+        }}
+      >
+        {onBack ? (
+          <button
+            onClick={() => {
+              playAudio.click();
+              onBack();
+            }}
+            aria-label="Back"
+            style={{
+              background: '#ffffff',
+              border: '1.5px solid #e2e8f0',
+              color: '#0f172a',
+              padding: '8px 16px',
+              borderRadius: '9999px',
+              fontWeight: 700,
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#0284c7';
+              e.currentTarget.style.transform = 'translateX(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#e2e8f0';
+              e.currentTarget.style.transform = 'translateX(0)';
+            }}
+          >
+            <ArrowLeft size={17} color="#0284c7" strokeWidth={2.4} />
+            <span>Back</span>
+          </button>
+        ) : (
+          <div style={{ width: '80px' }} />
+        )}
+
+        {/* Center Pill: Holographic Tag */}
+        <div
+          style={{
+            background: 'rgba(255, 255, 255, 0.85)',
+            border: '1px solid #e2e8f0',
+            backdropFilter: 'blur(10px)',
+            padding: '5px 14px',
+            borderRadius: '9999px',
+            fontSize: '11px',
+            fontWeight: 800,
+            letterSpacing: '0.8px',
+            color: '#64748b',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          }}
+        >
+          <Sparkles size={12} color="#0284c7" />
+          <span>HOLOBOX PERSONAS</span>
+        </div>
+
+        {/* Right Counter: Step Badge */}
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            padding: '6px 14px',
+            borderRadius: '9999px',
+            fontSize: '12px',
+            fontWeight: 800,
+            color: '#0f172a',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          }}
+        >
+          <span style={{ color: '#0284c7' }}>0{activeIndex + 1}</span> / 0{avatars.length}
+        </div>
+      </nav>
+
+      {/* ════════════════════════════════════════════════════════════════════
+          ROW 2: CREATIVE SCREEN TITLE & SUBTITLE (Completely Separate Row)
+         ════════════════════════════════════════════════════════════════════ */}
+      <header
+        style={{
+          textAlign: 'center',
+          padding: '2px 20px 8px',
+          zIndex: 25,
+          position: 'relative'
+        }}
+      >
+        <h1
+          className="popout-heading-luxury"
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: '28px',
+            fontWeight: 800,
+            letterSpacing: '-0.4px',
+            lineHeight: 1.2,
+            margin: 0,
+            background: 'linear-gradient(135deg, #0f172a 0%, #0284c7 45%, #7c3aed 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 2px 8px rgba(14, 165, 233, 0.12))'
+          }}
+        >
+          A New You, Reimagined
+        </h1>
+        <p
+          className="popout-sub-luxury"
+          style={{
+            margin: '4px 0 0',
+            color: '#64748b',
+            fontSize: '12.5px',
+            fontWeight: 500,
+            letterSpacing: '0.2px'
+          }}
+        >
+          Your imagination. Your identity. Your transformation.
+        </p>
+      </header>
 
       {/* 2. Main Avatar Carousel Stage (Shows ONLY Avatar Images, No Profession Names) */}
       <div className="avatar-carousel-hero-stage">
